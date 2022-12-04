@@ -17,10 +17,21 @@ model User {
 }
 
 model Incident {
+  id                String              @id @unique @default(uuid())
+  title             String?
+  description       String?
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  users             User[]
+  causes IncidentCauseItem[]
+}
+
+model IncidentCauseItem {
   id          String   @id @unique @default(uuid())
-  title       String?
   description String?
+  isAction    Boolean  @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  users       User[]
+  incident    Incident @relation(fields: [incidentId], references: [id])
+  incidentId  String
 }
