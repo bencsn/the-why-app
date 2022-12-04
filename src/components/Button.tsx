@@ -4,10 +4,12 @@ export default function Button({
   children,
   variant,
   onClick,
+  type
 }: {
   children: React.ReactNode;
   variant?: "primary" | "secondary" | "text";
   onClick?: () => void;
+  type?: "button" | "submit" | "reset";
 }) {
   let additionalClassNames = "";
   if (variant === "primary") {
@@ -21,6 +23,7 @@ export default function Button({
 
   return (
     <button
+      type={type || "submit"}
       onClick={onClick}
       className={"rounded px-3 py-1 " + additionalClassNames}
     >
