@@ -6,3 +6,17 @@ export const getIncidentById = async (incidentId: string) => {
     },
   });
 };
+
+export const getAllMyIncidents = async (userId: string) => {
+  //  return all incidents that contain the user id
+  const userWithIncidents = await prisma.user.findUnique({
+    where: {
+      id: userId,
+    },
+    include: {
+      incidents: true,
+    },
+  });
+
+  return userWithIncidents?.incidents;
+};

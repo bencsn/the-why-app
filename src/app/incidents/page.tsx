@@ -1,35 +1,38 @@
-"use client";
-
-import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { redirect } from "next/navigation";
 import React from "react";
 import Button from "../../components/Button";
-import Input from "../../components/Input";
+import { getAllMyIncidents } from "../../server/services/incidents";
+import { getCurrentUser } from "../../server/services/users";
 
-export default function IncidentsPage() {
-  const [incidentId, setIncidentId] = React.useState<string>("");
-  const router = useRouter()
+export default async function IncidentsPage() {
+  const user = await getCurrentUser();
+  if (!user) {
+    redirect("/");
+  }
+  const myIncidents = await getAllMyIncidents(user.id);
   return (
-    <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        router.push(`/incidents/${incidentId}`);
-      }}
-    >
-      <Input
-        label="Incident ID"
-        inputProps={{
-          type: "text",
-          placeholder: "Enter an incident ID",
-          name: "incidentId",
-          value: incidentId,
-          onChange: (e) => setIncidentId(e.target.value),
-        }}
-        id="incident-id"
-        className="mb-3"
-      />
-      <div className="flex justify-end">
-        <Button variant="primary">Go to incident</Button>
+    <div className="flex flex-col gap-4">
+      <div className="flex items-center justify-between">
+        <h2 className="text-xl font-black uppercase">My incidents</h2>
+        <Link href="/">
+          <Button variant="secondary">New incident</Button>
+        </Link>
       </div>
-    </form>
+      <div className="flex flex-col gap-4">
+        {myIncidents?.map((incident) => (
+          <Link key={incident.id} href={`/incidents/${incident.id}`}>
+            <div className="flex items-center justify-between border px-3 py-2 rounded hover:border-blue-500">
+              <div className="flex flex-col gap-2">
+                <div className="text-lg font-black">{incident.title}</div>
+                <div className="text-sm text-gray-500">
+                  {incident.description}
+                </div>
+              </div>
+            </div>
+          </Link>
+        ))}
+      </div>
+    </div>
   );
 }

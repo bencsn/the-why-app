@@ -8,11 +8,24 @@ export default async function handler(
 ) {
   if (req.method === "POST") {
     const { title, description } = req.body;
+    // get user id from cookie
+    const user = req.cookies.user;
+
+    // allow creating incident without user
+    const data = {
+      title,
+      description,
+      users: user
+        ? {
+            connect: {
+              id: user,
+            },
+          }
+        : undefined,
+    };
+
     const incident = await prisma.incident.create({
-      data: {
-        title,
-        description,
-      },
+      data: data,
     });
     res.redirect("/incidents/" + incident.id);
   } else {
